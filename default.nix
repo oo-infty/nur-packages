@@ -15,4 +15,5 @@
   overlays = import ./overlays; # nixpkgs overlays
 
   fcitx5-fluent-dark = pkgs.callPackage ./pkgs/fcitx5-fluent-dark {};
+  lx-music-desktop = pkgs.callPackage ./pkgs/lx-music-desktop {};
 }
