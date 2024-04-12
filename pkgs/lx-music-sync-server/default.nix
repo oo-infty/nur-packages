@@ -26,10 +26,7 @@ buildNpmPackage rec {
     cp -r server $out/lib/node_modules/lx-music-sync-server
     mkdir -p $out/bin
 
-    # FIXME: allow configurable LOG_PATH and DATA_PATH
     makeWrapper ${nodejs}/bin/node $out/bin/lx-music-sync-server \
-        --add-flags "$out/lib/node_modules/lx-music-sync-server/index.js" \
-        --set LOG_PATH /home/oo-infty/.cache/lx-music-sync-server/logs \
-        --set DATA_PATH /home/oo-infty/.cache/lx-music-sync-server/data \
+        --add-flags "$out/lib/node_modules/lx-music-sync-server/index.js"
   '';
 }

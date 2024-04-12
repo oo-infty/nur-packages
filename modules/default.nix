@@ -1,5 +1,7 @@
+{ config, lib, pkgs, ... }:
+
 {
-  # Add your NixOS modules here
-  #
-  # my-module = ./my-module;
+  imports = [
+    ./services/lx-music-sync-server.nix
+  ];
 }
