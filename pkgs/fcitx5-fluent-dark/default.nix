@@ -29,5 +29,6 @@ stdenvNoCC.mkDerivation rec {
     changelog = "https://github.com/Reverier-Xu/FluentDark-fcitx5/releases/tag/${src.rev}";
     license = licenses.mpl20;
     platforms = platforms.all;
+    maintainers = with maintainers; [ oo-infty ];
   };
 }

@@ -29,4 +29,14 @@ buildNpmPackage rec {
     makeWrapper ${nodejs}/bin/node $out/bin/lx-music-sync-server \
         --add-flags "$out/lib/node_modules/lx-music-sync-server/index.js"
   '';
+
+  meta = with lib; {
+    description = "Data synchronization service of LX Music running on Node.js";
+    homepage = "https://github.com/lyswhut/lx-music-sync-server";
+    changelog = "https://github.com/lyswhut/lx-music-sync-server/releases/tag/v${version}";
+    license = licenses.asl20;
+    platforms = platforms.unix;
+    mainProgram = "lx-music-sync-server";
+    maintainers = with maintainers; [ oo-infty ];
+  };
 }

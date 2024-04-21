@@ -262,4 +262,6 @@ in {
       };
     };
   };
+
+  meta.maintainers = with lib.maintainers; [ oo-infty ];
 }
