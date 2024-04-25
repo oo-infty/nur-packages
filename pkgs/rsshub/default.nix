@@ -2,11 +2,12 @@
 , fetchFromGitHub
 , buildNpmPackage
 , nodejs
+, bash
 }:
 
-buildNpmPackage rec {
+buildNpmPackage {
   pname = "rsshub";
-  version = "1.0.0-master-614f6dc";
+  version = "unstable-2024-04-25";
 
   src = fetchFromGitHub {
     owner = "DIYgod";
@@ -22,6 +23,7 @@ buildNpmPackage rec {
 
   buildInputs = [
     nodejs
+    bash
   ];
 
   postPatch = ''
@@ -31,15 +33,19 @@ buildNpmPackage rec {
   installPhase = ''
     runHook preInstall
 
-    mkdir -p $out/bin $out/lib/node_modules/rsshub
+    mkdir -p $out/bin $out/lib/rsshub
+    cp -r lib node_modules assets api package.json tsconfig.json $out/lib/rsshub
 
-    cp -r lib node_modules assets api $out/lib/node_modules/rsshub
-    cp -r package.json tsconfig.json $out/lib/node_modules/rsshub
+    cat << EOF > $out/bin/rsshub
+    #!${bash}/bin/bash
+    cd $out/lib/rsshub
+    export TSX_TSCONFIG_PATH=$out/lib/rsshub/tsconfig.json
+    export NODE_ENV=production
+    export NO_LOGFILES=true
+    ./node_modules/.bin/cross-env ./node_modules/.bin/tsx lib/index.ts
+    EOF
 
-    makeWrapper "$out/lib/node_modules/rsshub/node_modules/.bin/cross-env" $out/bin/rsshub \
-        --add-flags "NODE_ENV=production" \
-        --add-flags "$out/lib/node_modules/rsshub/node_modules/.bin/tsx" \
-        --add-flags "$out/lib/node_modules/rsshub/lib/index.ts"
+    chmod +x $out/bin/rsshub
 
     runHook postInstall
   '';
