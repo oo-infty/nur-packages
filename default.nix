@@ -18,4 +18,5 @@
   lx-music-desktop = pkgs.callPackage ./pkgs/lx-music-desktop {};
   lx-music-sync-server = pkgs.callPackage ./pkgs/lx-music-sync-server {};
   rsshub = pkgs.callPackage ./pkgs/rsshub {};
+  tickr = pkgs.callPackage ./pkgs/tickr {};
 }
