@@ -68,4 +68,14 @@ stdenv.mkDerivation {
         --replace-fail "/usr/bin" "$out/bin" \
         --replace-fail "/usr/share" "$out/share"
   '';
+
+  meta = {
+    description = "A GTK-based highly graphically-customizable Feed Ticker";
+    homepage = "http://www.open-tickr.net";
+    changelog = "https://www.open-tickr.net/history.php";
+    license = lib.licenses.gpl3;
+    platforms = lib.platforms.linux;
+    mainProgram = "tickr";
+    maintainers = with lib.maintainers; [ oo-infty ];
+  };
 }
