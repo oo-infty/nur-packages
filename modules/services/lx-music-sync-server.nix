@@ -9,7 +9,8 @@ let
         type = lib.types.str;
         default = name;
         description = lib.mdDoc ''
-          Name of a user of the synchronization service.
+          Name of a user of the synchronization service. Only alphabets, digits
+          and underscore are allowed.
         '';
       };
 
@@ -223,7 +224,7 @@ in {
         exportEnvCmd = builtins.concatStringsSep
           " "
           (builtins.map
-            ({ name, value }: ''${name}="${lib.escapeShellArg value}"'')
+            ({ name, value }: ''${name}=${lib.escapeShellArg value}'')
             (lib.mapAttrsToList buildEnvKeyValue cfg.accounts));
       in ''
         ${exportEnvCmd} ${cfg.package}/bin/lx-music-sync-server
