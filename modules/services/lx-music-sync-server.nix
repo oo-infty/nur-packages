@@ -10,7 +10,7 @@ let
         default = name;
         description = lib.mdDoc ''
           Name of a user of the synchronization service. Only alphabets, digits
-          and underscore are allowed.
+          and underscores are allowed.
         '';
       };
 
@@ -222,12 +222,14 @@ in {
           value = "${(builtins.toJSON (convertAccountConfig value))}";
         };
         exportEnvCmd = builtins.concatStringsSep
-          " "
+          "\n"
           (builtins.map
-            ({ name, value }: ''${name}=${lib.escapeShellArg value}'')
+            ({ name, value }: ''export ${name}=${lib.escapeShellArg value}'')
             (lib.mapAttrsToList buildEnvKeyValue cfg.accounts));
       in ''
-        ${exportEnvCmd} ${cfg.package}/bin/lx-music-sync-server
+        ${exportEnvCmd}
+
+        ${cfg.package}/bin/lx-music-sync-server
       '';
 
       serviceConfig = {
