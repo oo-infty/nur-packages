@@ -1,9 +1,13 @@
-{ config, lib, pkgs, ... }:
+{ config
+, lib
+, pkgs
+, ...
+}:
 
 let
   cfg = config.services.lx-music-sync-server;
 
-  usersOption = { name, ... }: {
+  accountOption = { name, ... }: {
     options = {
       name = lib.mkOption {
         type = lib.types.str;
@@ -17,7 +21,7 @@ let
       password = lib.mkOption {
         type = lib.types.nullOr lib.types.str;
         default = null;
-        description = lib.mdDoc ''
+        description = ''
           The corresponding user's password. Warning: it will be world-readable
           in /nix/store.
         '';
@@ -27,7 +31,7 @@ let
         type = lib.types.nullOr lib.types.str;
         default = null;
         example = "/run/secrets/lx-music-sync-server-password";
-        description = lib.mdDoc ''
+        description = ''
           The file from which a user's password is loaded.
         '';
       };
@@ -35,7 +39,7 @@ let
       maxSnapshotNum = lib.mkOption {
         type = lib.types.ints.positive;
         default = cfg.maxSnapshotNum;
-        description = lib.mdDoc ''
+        description = ''
           The user-specific maximum number of snapshots.
         '';
       };
@@ -43,25 +47,33 @@ let
       listAddMusicLocation = lib.mkOption {
         type = lib.types.enum [ "top" "bottom" ];
         default = cfg.listAddMusicLocation;
-        description = lib.mdDoc ''
+        description = ''
           The user-specific location of a newly added music.
         '';
       };
     };
   };
+
+  logDir = if cfg.logDir == null
+    then "%L/lx-music-sync-server"
+    else cfg.logDir;
+
+  dataDir = if cfg.logDir == null
+    then "%S/lx-music-sync-server"
+    else cfg.dataDir;
 in {
   ###### interface
 
   options.services.lx-music-sync-server = {
     enable = lib.mkEnableOption
-      (lib.mdDoc "Data synchronization service of LX Music running on Node.js");
+      ("Data synchronization service of LX Music running on Node.js");
 
     package = lib.mkPackageOption pkgs "lx-music-sync-server" {};
 
     name = lib.mkOption {
       type = lib.types.str;
       default = "LX Music Sync Server";
-      description = lib.mdDoc ''
+      description = ''
         The name of the synchronization service.
       '';
     };
@@ -69,7 +81,7 @@ in {
     port = lib.mkOption {
       type = lib.types.port;
       default = 9527;
-      description = lib.mdDoc ''
+      description = ''
         Port for theh server to listen on.
       '';
     };
@@ -77,7 +89,7 @@ in {
     ip = lib.mkOption {
       type = lib.types.str;
       default = "127.0.0.1";
-      description = lib.mdDoc ''
+      description = ''
         The IP address for the service to bind. Use 127.0.0.1 by default. Use
         0.0.0.0 to accept all IPv4 requests. Or use :: to accept all requests
         including IPv4 and IPv6.
@@ -85,12 +97,12 @@ in {
     };
 
     proxy = {
-      enable = lib.mkEnableOption (lib.mdDoc "Whether to enable support for reverse proxy");
+      enable = lib.mkEnableOption ("Whether to enable support for reverse proxy");
 
       header = lib.mkOption {
         type = lib.types.str;
         default = "x-real-ip";
-        description = lib.mdDoc ''
+        description = ''
           The request header's field from which the client's real IP is obtained.
         '';
       };
@@ -99,23 +111,33 @@ in {
     user = lib.mkOption {
       type = lib.types.str;
       default = "lx-music-sync-server";
-      description = lib.mdDoc ''
-        User under which lx-music-sync-server runs.
+      description = ''
+        The user to run lx-music-sync-server as.
+      '';
+    };
+
+    group = lib.mkOption {
+      type = lib.types.str;
+      default = "lx-music-sync-server";
+      description = ''
+        The group to run lx-music-sync-server under.
       '';
     };
 
     logDir = lib.mkOption {
-      type = lib.types.str;
-      default = "/var/log/lx-music-sync-server/";
-      description = lib.mdDoc ''
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      example = "/var/lx-music-sync-server/";
+      description = ''
         The directory to which the service's log writes.
       '';
     };
 
     dataDir = lib.mkOption {
-      type = lib.types.str;
-      default = "/var/lib/lx-music-sync-server/";
-      description = lib.mdDoc ''
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      example = "/var/lib/lx-music-sync-server/";
+      description = ''
         The directory where the service's data is stored.
       '';
     };
@@ -123,23 +145,23 @@ in {
     maxSnapshotNum = lib.mkOption {
       type = lib.types.ints.positive;
       default = 10;
-      description = lib.mdDoc ''
-        The maximum number of snapshots. This option can be overriden by
-        user-specific configurations.
+      description = ''
+        The maximum number of snapshots. This option can be overridden by
+        account-specific configurations.
       '';
     };
 
     listAddMusicLocation = lib.mkOption {
       type = lib.types.enum [ "top" "bottom" ];
       default = "top";
-      description = lib.mdDoc ''
-        The location of a newly added music. This option can be overriden by
-        user-specific configurations.
+      description = ''
+        The location of a newly added music. This option can be overridden by
+        account-specific configurations.
       '';
     };
 
     accounts = lib.mkOption {
-      type = lib.types.attrsOf (lib.types.submodule usersOption);
+      type = lib.types.attrsOf (lib.types.submodule accountOption);
       default = {};
       example = lib.literalExpression ''
         {
@@ -149,6 +171,11 @@ in {
             listAddMusicLocation = "top";
           };
         }
+      '';
+      description = ''
+        Configurations of all accounts. Note that usernames should only contain
+        alphabets, digits and underscores. The password of each user should be
+        unique.
       '';
     };
   };
@@ -175,18 +202,18 @@ in {
 
     users.users.${cfg.user} = {
       isSystemUser = true;
-      group = cfg.user;
+      group = cfg.group;
       description = "lx-music-sync-server service user";
     };
 
-    users.groups.${cfg.user} = {};
+    users.groups.${cfg.group} = {};
 
     systemd.tmpfiles.settings."10-lx-music-sync-server" = {
-      ${cfg.dataDir}.d = {
+      ${dataDir}.d = {
         inherit (cfg) user;
         group = config.users.users.${cfg.user}.group;
       };
-      ${cfg.logDir}.d = {
+      ${logDir}.d = {
         inherit (cfg) user;
         group = config.users.users.${cfg.user}.group;
       };
@@ -201,8 +228,8 @@ in {
         PORT = builtins.toString cfg.port;
         BIND_IP = cfg.ip;
         PROXY_HEADER = lib.mkIf cfg.proxy.enable cfg.proxy.header;        
-        LOG_PATH = cfg.logDir;
-        DATA_PATH = cfg.dataDir;
+        LOG_PATH = logDir;
+        DATA_PATH = dataDir;
         MAX_SNAPSHOT_NUM = builtins.toString cfg.maxSnapshotNum;
         LIST_ADD_MUSIC_LOCATION_TYPE = cfg.listAddMusicLocation;
       };
@@ -210,11 +237,9 @@ in {
       script = let
         convertAccountConfig = account: {
           inherit (account) maxSnapshotNum;
-          password =
-            if account.passwordFile != null then
-              ''$(cat ${account.passwordFile})''
-            else
-              account.password;
+          password = if account.passwordFile != null
+            then ''$(cat ${account.passwordFile})''
+            else account.password;
           "list.addMusicLocationType" = account.listAddMusicLocation;
         };
         buildEnvKeyValue = name: value: {
@@ -236,9 +261,10 @@ in {
         Type = "simple";
         User = cfg.user;
         Group = config.users.users.${cfg.user}.group;
-        StateDirectory = cfg.user;
+        LogsDirectory = logDir;
+        StateDirectory = dataDir;
         WorkDirectory = cfg.package;
-        ReadWritePaths = "-${cfg.dataDir} -${cfg.logDir}";
+        ReadWritePaths = "-${dataDir} -${logDir}";
         CapabilityBoundingSet = [ "CAP_NET_BIND_SERVICE" ];
         DeviceAllow = "";
         LockPersonality = true;
