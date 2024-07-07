@@ -12,6 +12,9 @@ let
       name = lib.mkOption {
         type = lib.types.str;
         default = name;
+        defaultText = ''
+          config.services.lx-music-sync-server.account.<name>
+        '';
         description = lib.mdDoc ''
           Name of a user of the synchronization service. Only alphabets, digits
           and underscores are allowed.
@@ -39,6 +42,9 @@ let
       maxSnapshotNum = lib.mkOption {
         type = lib.types.ints.positive;
         default = cfg.maxSnapshotNum;
+        defaultText = ''
+          config.services.lx-music-sync-server.maxSnapshotNum
+        '';
         description = ''
           The user-specific maximum number of snapshots.
         '';
@@ -47,6 +53,9 @@ let
       listAddMusicLocation = lib.mkOption {
         type = lib.types.enum [ "top" "bottom" ];
         default = cfg.listAddMusicLocation;
+        defaultText = ''
+          config.services.lx-music-sync-server.listAddMusicLocation
+        '';
         description = ''
           The user-specific location of a newly added music.
         '';
@@ -58,7 +67,7 @@ let
     then "%L/lx-music-sync-server"
     else cfg.logDir;
 
-  dataDir = if cfg.logDir == null
+  dataDir = if cfg.dataDir == null
     then "%S/lx-music-sync-server"
     else cfg.dataDir;
 in {

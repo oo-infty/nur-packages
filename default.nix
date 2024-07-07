@@ -15,7 +15,6 @@
   overlays = import ./overlays; # nixpkgs overlays
 
   fcitx5-fluent-dark = pkgs.callPackage ./pkgs/fcitx5-fluent-dark {};
-  lx-music-desktop = pkgs.callPackage ./pkgs/lx-music-desktop {};
   lx-music-sync-server = pkgs.callPackage ./pkgs/lx-music-sync-server {};
   rsshub = pkgs.callPackage ./pkgs/rsshub {};
   tickr = pkgs.callPackage ./pkgs/tickr {};
