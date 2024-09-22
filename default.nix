@@ -14,6 +14,7 @@
   modules = import ./modules; # NixOS modules
   overlays = import ./overlays; # nixpkgs overlays
 
+  citadel = pkgs.callPackage ./pkgs/citadel {};
   lx-music-sync-server = pkgs.callPackage ./pkgs/lx-music-sync-server {};
   tickr = pkgs.callPackage ./pkgs/tickr {};
 }
