@@ -144,6 +144,6 @@ rustPlatform.buildRustPackage {
     license = lib.licenses.mit;
     platforms = lib.platforms.unix;
     mainProgram = "citadel";
-    maintainers = with lib.maintainers; [ oo-infty ];
+    maintainers = with lib.maintainers; [ oosquare ];
   };
 }

@@ -37,6 +37,6 @@ buildNpmPackage rec {
     license = licenses.asl20;
     platforms = platforms.unix;
     mainProgram = "lx-music-sync-server";
-    maintainers = with maintainers; [ oo-infty ];
+    maintainers = with maintainers; [ oosquare ];
   };
 }

@@ -76,6 +76,6 @@ stdenv.mkDerivation {
     license = lib.licenses.gpl3;
     platforms = lib.platforms.linux;
     mainProgram = "tickr";
-    maintainers = with lib.maintainers; [ oo-infty ];
+    maintainers = with lib.maintainers; [ oosquare ];
   };
 }

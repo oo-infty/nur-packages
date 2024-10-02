@@ -301,5 +301,5 @@ in {
     };
   };
 
-  meta.maintainers = with lib.maintainers; [ oo-infty ];
+  meta.maintainers = with lib.maintainers; [ oosquare ];
 }
